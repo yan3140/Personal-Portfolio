@@ -1,0 +1,51 @@
+---
+import {
+  Activity,
+  BadgeCheck,
+  Braces,
+  GraduationCap,
+  Sprout,
+  Users,
+} from "lucide-astro";
+import { portfolio } from "../data/portfolio";
+import "../styles/journey.css";
+
+const icons = [GraduationCap, Users, Braces, BadgeCheck, Sprout, Activity];
+---
+
+<section
+  class="screen-section journey-section journey-timeline-section"
+  id="journey"
+  aria-labelledby="journey-title"
+  data-screen-section
+>
+  <div class="shell journey-timeline-shell" data-screen-content>
+    <header class="journey-timeline-heading" data-reveal>
+      <p class="eyebrow">JOURNEY / {String(portfolio.journey.length).padStart(2, "0")}</p>
+      <h2 id="journey-title">成长轨迹</h2>
+      <p>从校园学习到工作室协作，再到独立项目实践。</p>
+    </header>
+
+    <div class="journey-timeline" aria-label="成长经历时间线">
+      {portfolio.journey.map((item, index) => {
+        const Icon = icons[index] ?? Activity;
+        return (
+          <article class="journey-entry" data-reveal style={`--reveal-delay: ${index * 65}ms`}>
+            <span class="journey-entry__marker" aria-hidden="true">
+              <Icon size={17} stroke-width={1.9} />
+            </span>
+            <div class="journey-entry__meta">
+              <time>{item.date}</time>
+              <span>{item.label}</span>
+            </div>
+            <h3>{item.title}</h3>
+            <p>{item.description}</p>
+            <ul aria-label="阶段关键词">
+              {item.topics.map((topic) => <li>{topic}</li>)}
+            </ul>
+          </article>
+        );
+      })}
+    </div>
+  </div>
+</section>

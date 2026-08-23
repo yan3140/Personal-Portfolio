@@ -1,0 +1,345 @@
+---
+interface Props {
+  name: string;
+}
+
+const { name } = Astro.props;
+---
+
+<div
+  class="interactive-field"
+  aria-hidden="true"
+  data-particle-stage
+  data-name={name}
+>
+  <canvas></canvas>
+  <div class="field-grid"></div>
+</div>
+
+<script>
+  interface FieldPoint {
+    x: number;
+    y: number;
+    homeX: number;
+    homeY: number;
+    vx: number;
+    vy: number;
+    size: number;
+    alpha: number;
+    phase: number;
+    speed: number;
+    drift: number;
+  }
+
+  interface NameParticle {
+    x: number;
+    y: number;
+    targetX: number;
+    targetY: number;
+    vx: number;
+    vy: number;
+    size: number;
+    alpha: number;
+    targetAlpha: number;
+  }
+
+  interface Ripple {
+    x: number;
+    y: number;
+    radius: number;
+    life: number;
+    strength: number;
+  }
+
+  const stage = document.querySelector<HTMLElement>("[data-particle-stage]");
+  const canvas = stage?.querySelector<HTMLCanvasElement>("canvas");
+  const context = canvas?.getContext("2d");
+
+  if (stage && canvas && context) {
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const name = stage.dataset.name || "Developer";
+    const pointer = { x: -1000, y: -1000, active: false };
+    const fieldPoints: FieldPoint[] = [];
+    const nameParticles: NameParticle[] = [];
+    const ripples: Ripple[] = [];
+    const intro = {
+      startedAt: performance.now(),
+      assembleMs: 1500,
+      revealed: false,
+    };
+    let width = 0;
+    let height = 0;
+    let frame = 0;
+    let visible = true;
+    let accent = "#eaf8ff";
+    let accentSoft = "#ff4f9a";
+
+    const readPalette = () => {
+      const styles = getComputedStyle(document.documentElement);
+      accent = styles.getPropertyValue("--hero-particle").trim() || "#eaf8ff";
+      accentSoft = styles.getPropertyValue("--hero-particle-soft").trim() || "#ff4f9a";
+    };
+
+    const sampleName = () => {
+      nameParticles.length = 0;
+
+      const buffer = document.createElement("canvas");
+      const bufferContext = buffer.getContext("2d");
+      if (!bufferContext) return;
+
+      const title = document.querySelector<HTMLElement>("[data-hero-name]");
+      const titleRect = title?.getBoundingClientRect();
+      const stageRect = stage.getBoundingClientRect();
+      const titleStyle = title ? getComputedStyle(title) : null;
+      const mobile = width < 760;
+      const fontSize = titleStyle ? Number.parseFloat(titleStyle.fontSize) : mobile ? 46 : 96;
+      const sampleStep = mobile ? 3 : 4;
+      const padding = 20;
+      bufferContext.font = `650 ${fontSize}px "Geist Variable", system-ui, sans-serif`;
+      const textWidth = Math.ceil(bufferContext.measureText(name).width);
+      buffer.width = textWidth + padding * 2;
+      buffer.height = Math.ceil(fontSize * 1.25) + padding * 2;
+      bufferContext.font = `650 ${fontSize}px "Geist Variable", system-ui, sans-serif`;
+      bufferContext.fillStyle = "#ffffff";
+      bufferContext.textBaseline = "top";
+      bufferContext.fillText(name, padding, padding);
+
+      const pixels = bufferContext.getImageData(0, 0, buffer.width, buffer.height).data;
+      const left = titleRect ? titleRect.left - stageRect.left : mobile ? 18 : Math.max(32, width * 0.08);
+      const top = titleRect ? titleRect.top - stageRect.top + fontSize * 0.06 : height * 0.3;
+      const settled = intro.revealed;
+
+      for (let y = 0; y < buffer.height; y += sampleStep) {
+        for (let x = 0; x < buffer.width; x += sampleStep) {
+          const alphaValue = pixels[(y * buffer.width + x) * 4 + 3];
+          if (alphaValue < 80) continue;
+
+          const targetX = left + x - padding;
+          const targetY = top + y - padding;
+          const angle = Math.random() * Math.PI * 2;
+          const distance = 260 + Math.random() * Math.max(width, height) * 0.55;
+          nameParticles.push({
+            x: settled ? targetX : targetX + Math.cos(angle) * distance,
+            y: settled ? targetY : targetY + Math.sin(angle) * distance,
+            targetX,
+            targetY,
+            vx: 0,
+            vy: 0,
+            size: 0.8 + Math.random() * 1.25,
+            alpha: settled ? 0.75 : 0,
+            targetAlpha: 0.45 + (alphaValue / 255) * 0.55,
+          });
+        }
+      }
+    };
+
+    const buildField = () => {
+      fieldPoints.length = 0;
+
+      const spacing = width < 760 ? 54 : 58;
+      for (let x = spacing; x < width; x += spacing) {
+        for (let y = spacing; y < height; y += spacing) {
+          const keepChance = x > width * 0.54 ? 0.8 : 0.38;
+          if (Math.random() > keepChance) continue;
+          fieldPoints.push({
+            x,
+            y,
+            homeX: x,
+            homeY: y,
+            vx: 0,
+            vy: 0,
+          size: Math.random() > 0.78 ? 2 : 1.25,
+          alpha: 0.2 + Math.random() * 0.18,
+          phase: Math.random() * Math.PI * 2,
+          speed: 1 + Math.random() * 0.9,
+          drift: 8 + Math.random() * 9,
+          });
+        }
+      }
+
+    };
+
+    const resize = () => {
+      const rect = stage.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      width = rect.width;
+      height = rect.height;
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      context.setTransform(dpr, 0, 0, dpr, 0, 0);
+      readPalette();
+      buildField();
+      sampleName();
+    };
+
+    const pointerForce = (
+      point: { x: number; y: number; vx: number; vy: number },
+      radius = 94,
+      strength = 1.7,
+    ) => {
+      if (!pointer.active) return;
+      const dx = point.x - pointer.x;
+      const dy = point.y - pointer.y;
+      const distance = Math.hypot(dx, dy);
+      if (distance <= 0 || distance >= radius) return;
+      const force = (1 - distance / radius) * strength;
+      point.vx += (dx / distance) * force;
+      point.vy += (dy / distance) * force;
+    };
+
+    const rippleForce = (point: { x: number; y: number; vx: number; vy: number }) => {
+      ripples.forEach((ripple) => {
+        const dx = point.x - ripple.x;
+        const dy = point.y - ripple.y;
+        const distance = Math.hypot(dx, dy);
+        const band = Math.abs(distance - ripple.radius);
+        if (distance <= 0 || band > 24) return;
+        const force = (1 - band / 24) * ripple.strength * ripple.life;
+        point.vx += (dx / distance) * force;
+        point.vy += (dy / distance) * force;
+      });
+    };
+
+    const drawField = (time: number) => {
+      fieldPoints.forEach((point) => {
+        pointerForce(point);
+        rippleForce(point);
+        const targetX = point.homeX + Math.sin(time * 0.00062 * point.speed + point.phase) * point.drift;
+        const targetY = point.homeY + Math.cos(time * 0.0005 * point.speed + point.phase) * point.drift;
+        point.vx += (targetX - point.x) * 0.026;
+        point.vy += (targetY - point.y) * 0.026;
+        point.vx *= 0.89;
+        point.vy *= 0.89;
+        point.x += point.vx;
+        point.y += point.vy;
+      });
+
+      context.strokeStyle = accent;
+      for (let index = 0; index < fieldPoints.length; index += 1) {
+        const point = fieldPoints[index];
+        for (let peerIndex = index + 1; peerIndex < fieldPoints.length; peerIndex += 1) {
+          const peer = fieldPoints[peerIndex];
+          const distance = Math.hypot(point.x - peer.x, point.y - peer.y);
+          if (distance > 94) continue;
+          context.globalAlpha = (1 - distance / 94) * 0.16;
+          context.lineWidth = 0.7;
+          context.beginPath();
+          context.moveTo(point.x, point.y);
+          context.lineTo(peer.x, peer.y);
+          context.stroke();
+        }
+      }
+
+      context.fillStyle = accent;
+      fieldPoints.forEach((point) => {
+        context.globalAlpha = point.alpha;
+        context.beginPath();
+        context.arc(point.x, point.y, point.size, 0, Math.PI * 2);
+        context.fill();
+      });
+
+    };
+
+    const drawName = (time: number) => {
+      if (nameParticles.length === 0) return;
+      const elapsed = time - intro.startedAt;
+
+      if (elapsed >= intro.assembleMs && !intro.revealed) {
+        intro.revealed = true;
+        window.dispatchEvent(new CustomEvent("hero-particles-ready"));
+      }
+
+      nameParticles.forEach((particle) => {
+        pointerForce(particle, 104, 0.42);
+        rippleForce(particle);
+
+        const shimmerX = Math.sin(time * 0.0017 + particle.targetY * 0.035) * 0.45;
+        const shimmerY = Math.cos(time * 0.0015 + particle.targetX * 0.03) * 0.35;
+        particle.vx += (particle.targetX + shimmerX - particle.x) * 0.038;
+        particle.vy += (particle.targetY + shimmerY - particle.y) * 0.038;
+        particle.alpha += (particle.targetAlpha - particle.alpha) * 0.075;
+
+        particle.vx *= 0.86;
+        particle.vy *= 0.86;
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+        context.globalAlpha = particle.alpha;
+        context.fillStyle = accent;
+        context.beginPath();
+        context.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+        context.fill();
+      });
+    };
+
+    const drawRipples = () => {
+      for (let index = ripples.length - 1; index >= 0; index -= 1) {
+        const ripple = ripples[index];
+        ripple.radius += 4.5;
+        ripple.life -= 0.018;
+        if (ripple.life <= 0) {
+          ripples.splice(index, 1);
+          continue;
+        }
+        context.globalAlpha = ripple.life * 0.38;
+        context.strokeStyle = index % 2 === 0 ? accent : accentSoft;
+        context.lineWidth = 1.2;
+        context.beginPath();
+        context.arc(ripple.x, ripple.y, ripple.radius, 0, Math.PI * 2);
+        context.stroke();
+      }
+    };
+
+    const animate = (time: number) => {
+      context.clearRect(0, 0, width, height);
+      drawField(time);
+      drawRipples();
+      drawName(time);
+      context.globalAlpha = 1;
+      if (visible) frame = requestAnimationFrame(animate);
+    };
+
+    const positionPointer = (event: PointerEvent) => {
+      const rect = stage.getBoundingClientRect();
+      pointer.x = event.clientX - rect.left;
+      pointer.y = event.clientY - rect.top;
+      pointer.active = true;
+    };
+
+    const pointerSurface = stage.closest<HTMLElement>(".hero") ?? stage;
+
+    pointerSurface.addEventListener("pointermove", positionPointer);
+    pointerSurface.addEventListener("pointerleave", () => {
+      pointer.active = false;
+    });
+    pointerSurface.addEventListener("pointerdown", (event) => {
+      positionPointer(event);
+      ripples.push({ x: pointer.x, y: pointer.y, radius: 8, life: 1, strength: 1.9 });
+      ripples.push({ x: pointer.x, y: pointer.y, radius: 0, life: 0.74, strength: 1.25 });
+    });
+
+    const visibilityObserver = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      if (visible && !frame && !reducedMotion) {
+        frame = requestAnimationFrame(animate);
+      }
+      if (!visible && frame) {
+        cancelAnimationFrame(frame);
+        frame = 0;
+      }
+    });
+    visibilityObserver.observe(stage);
+
+    new ResizeObserver(resize).observe(stage);
+    window.addEventListener("portfolio-style-change", readPalette);
+    resize();
+
+    if (reducedMotion) {
+      window.dispatchEvent(new CustomEvent("hero-particles-ready"));
+      context.clearRect(0, 0, width, height);
+    } else {
+      frame = requestAnimationFrame(animate);
+    }
+  }
+</script>

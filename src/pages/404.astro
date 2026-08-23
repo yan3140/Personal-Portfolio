@@ -1,0 +1,57 @@
+---
+import { ArrowLeft } from "lucide-astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { portfolio } from "../data/portfolio";
+
+const homeUrl = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+---
+
+<BaseLayout title={`页面未找到 | ${portfolio.profile.name}`} description="请求的页面不存在。">
+  <main class="not-found">
+    <div class="shell not-found-inner">
+      <p class="eyebrow">ERROR / 404</p>
+      <h1>这个页面还没有被构建。</h1>
+      <p>链接可能已经改变，也可能只是一个尚未开始的想法。</p>
+      <a class="button button--primary" href={homeUrl}>
+        <ArrowLeft size={17} stroke-width={1.8} />
+        返回首页
+      </a>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .not-found {
+    display: grid;
+    min-height: 100vh;
+    place-items: center;
+    padding-block: 64px;
+  }
+
+  .not-found-inner {
+    max-width: 760px;
+  }
+
+  h1 {
+    max-width: 700px;
+    margin: 0;
+    font-size: 60px;
+    font-weight: 630;
+    line-height: 1.08;
+  }
+
+  .not-found-inner > p:not(.eyebrow) {
+    max-width: 540px;
+    margin: 24px 0 32px;
+    color: var(--ink-soft);
+    font-size: 18px;
+  }
+
+  @media (max-width: 720px) {
+    h1 {
+      font-size: 42px;
+    }
+  }
+</style>

@@ -1,0 +1,88 @@
+---
+import "@fontsource-variable/geist";
+import "@fontsource-variable/jetbrains-mono";
+import "../styles/portfolio.css";
+import SiteBackground from "../components/SiteBackground.jsx";
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+const baseUrl = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const favicon = `${baseUrl}favicon.svg`;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#170834" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta name="twitter:card" content="summary" />
+    <link rel="icon" type="image/svg+xml" href={favicon} />
+    <title>{title}</title>
+    <script is:inline>
+      (() => {
+        try {
+          const savedStyle = localStorage.getItem("portfolio-style");
+          if (savedStyle === "light" || savedStyle === "blue") {
+            document.documentElement.dataset.style = savedStyle;
+            document.querySelector('meta[name="theme-color"]')?.setAttribute("content", savedStyle === "light" ? "#f8f5ff" : "#170834");
+          }
+        } catch {
+          // Keep the default blue style when storage is unavailable.
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <SiteBackground client:load />
+    <a class="skip-link" href="#main-content">跳到主要内容</a>
+    <slot />
+    <script>
+      const revealItems = document.querySelectorAll<HTMLElement>("[data-reveal]");
+      const screenSections = document.querySelectorAll<HTMLElement>("[data-screen-section]");
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      if (reducedMotion) {
+        revealItems.forEach((item) => item.classList.add("is-visible"));
+        screenSections.forEach((section) => section.classList.add("is-section-active"));
+      } else {
+        document.documentElement.classList.add("section-motion");
+
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+              entry.target.classList.add("is-visible");
+              observer.unobserve(entry.target);
+            });
+          },
+          { threshold: 0.12 },
+        );
+        revealItems.forEach((item) => observer.observe(item));
+
+        const sectionObserver = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              entry.target.classList.toggle("is-section-active", entry.isIntersecting);
+            });
+          },
+          {
+            rootMargin: "-18% 0px -18% 0px",
+            threshold: 0,
+          },
+        );
+        screenSections.forEach((section) => sectionObserver.observe(section));
+      }
+    </script>
+  </body>
+</html>

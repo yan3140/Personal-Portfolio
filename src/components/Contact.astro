@@ -1,0 +1,39 @@
+---
+import { ArrowUpRight, Github, Mail } from "lucide-astro";
+import { portfolio } from "../data/portfolio";
+
+const { profile } = portfolio;
+---
+
+<section
+  class="screen-section contact-section"
+  id="contact"
+  aria-labelledby="contact-title"
+  data-screen-section
+>
+  <div class="shell contact-inner" data-screen-content data-reveal>
+    <p class="eyebrow">CONTACT</p>
+    <h2 id="contact-title">联系方式</h2>
+
+    <div class="contact-lower">
+      <p>开放实习机会与技术交流。</p>
+      <div class="contact-actions">
+        {profile.email ? (
+          <a class="button button--primary" href={`mailto:${profile.email}`}>
+            <Mail size={17} stroke-width={1.8} />
+            发送邮件
+          </a>
+        ) : (
+          <span class="contact-placeholder">邮箱将在资料补充后显示</span>
+        )}
+        {profile.github && (
+          <a class="button button--secondary" href={profile.github} target="_blank" rel="noreferrer">
+            <Github size={17} stroke-width={1.8} />
+            GitHub
+            <ArrowUpRight size={14} stroke-width={1.8} />
+          </a>
+        )}
+      </div>
+    </div>
+  </div>
+</section>

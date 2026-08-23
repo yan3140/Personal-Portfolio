@@ -1,0 +1,218 @@
+---
+import { ArrowLeft, ArrowRight, ArrowUpRight, Code2 } from "lucide-astro";
+import Footer from "../../components/Footer.astro";
+import Header from "../../components/Header.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { portfolio, type Project } from "../../data/portfolio";
+import { projectDetails, type ProjectDetail } from "../../data/projectDetails";
+import "../../styles/project-detail.css";
+
+interface Props {
+  project: Project;
+  detail: ProjectDetail;
+  previous: Project;
+  next: Project;
+}
+
+export function getStaticPaths() {
+  return portfolio.projects.map((project, index, projects) => {
+    const detail = projectDetails.find((item) => item.slug === project.slug);
+    if (!detail) throw new Error(`Missing detail data for project: ${project.slug}`);
+
+    return {
+      params: { slug: project.slug },
+      props: {
+        project,
+        detail,
+        previous: projects[(index - 1 + projects.length) % projects.length],
+        next: projects[(index + 1) % projects.length],
+      },
+    };
+  });
+}
+
+const { project, detail, previous, next } = Astro.props;
+const baseUrl = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const projectHref = (slug: string) => `${baseUrl}projects/${slug}/`;
+---
+
+<BaseLayout title={`${project.name} | Lingxiao Pang`} description={project.summary}>
+  <Header />
+  <main class="project-detail-page" data-tone={project.tone}>
+    <section class="project-detail-hero" aria-labelledby="project-title">
+      <div class="shell project-detail-hero__inner">
+        <a class="project-back" href={`${baseUrl}#projects`}>
+          <ArrowLeft size={16} stroke-width={1.8} />
+          返回项目
+        </a>
+
+        <div class="project-detail-hero__grid">
+          <div class="project-detail-hero__copy">
+            <p class="eyebrow">PROJECT / {project.number}</p>
+            <p class="project-detail-kicker">{detail.shortLabel}</p>
+            <h1 id="project-title">{project.name}</h1>
+            <p class="project-detail-lead">{detail.lead}</p>
+          </div>
+
+          <aside class="project-detail-meta" aria-label="项目概览">
+            <dl>
+              <div>
+                <dt>STATUS</dt>
+                <dd>{project.status}</dd>
+              </div>
+              <div>
+                <dt>TYPE</dt>
+                <dd>{project.category}</dd>
+              </div>
+              <div>
+                <dt>ROLE</dt>
+                <dd>个人学习与工程实践</dd>
+              </div>
+            </dl>
+            <div class="project-detail-stack" aria-label="项目技术栈">
+              {project.stack.map((technology) => <span>{technology}</span>)}
+            </div>
+          </aside>
+        </div>
+
+        {(project.repository || project.demo) && (
+          <div class="project-detail-actions">
+            {project.repository && (
+              <a class="detail-action detail-action--primary" href={project.repository} target="_blank" rel="noreferrer">
+                <Code2 size={17} stroke-width={1.8} />
+                SOURCE
+                <ArrowUpRight size={15} stroke-width={1.8} />
+              </a>
+            )}
+            {project.demo && (
+              <a class="detail-action" href={project.demo} target="_blank" rel="noreferrer">
+                LIVE DEMO
+                <ArrowUpRight size={15} stroke-width={1.8} />
+              </a>
+            )}
+          </div>
+        )}
+      </div>
+    </section>
+
+    <section class="project-detail-band" aria-labelledby="overview-title">
+      <div class="shell project-detail-split">
+        <div class="project-detail-heading" data-reveal>
+          <p class="eyebrow">01 / OVERVIEW</p>
+          <h2 id="overview-title">项目背景</h2>
+        </div>
+        <div class="project-detail-prose" data-reveal>
+          <p>{detail.context}</p>
+          <p>{detail.goal}</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="project-detail-band" aria-labelledby="features-title">
+      <div class="shell">
+        <header class="project-detail-section-head" data-reveal>
+          <p class="eyebrow">02 / SYSTEM</p>
+          <h2 id="features-title">核心实现</h2>
+        </header>
+        <div class="project-feature-list">
+          {detail.features.map((feature, index) => (
+            <article class="project-feature-row" data-reveal style={`--reveal-delay: ${index * 80}ms`}>
+              <span>0{index + 1}</span>
+              <h3>{feature.title}</h3>
+              <p>{feature.description}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="project-detail-band project-detail-band--accent" aria-labelledby="work-title">
+      <div class="shell project-detail-split">
+        <div class="project-detail-heading" data-reveal>
+          <p class="eyebrow">03 / MY WORK</p>
+          <h2 id="work-title">我完成的工作</h2>
+        </div>
+        <ol class="project-work-list" data-reveal>
+          {detail.responsibilities.map((item, index) => (
+            <li>
+              <span>0{index + 1}</span>
+              <p>{item}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+
+    <section class="project-detail-band" aria-labelledby="challenge-title">
+      <div class="shell">
+        <header class="project-detail-section-head project-detail-section-head--wide" data-reveal>
+          <div>
+            <p class="eyebrow">04 / DEBUGGING</p>
+            <h2 id="challenge-title">一个真实问题</h2>
+          </div>
+          <p>{detail.challenge.title}</p>
+        </header>
+
+        <div class="project-debug-flow">
+          {[
+            ["PROBLEM", detail.challenge.problem],
+            ["INVESTIGATION", detail.challenge.investigation],
+            ["SOLUTION", detail.challenge.solution],
+            ["VERIFICATION", detail.challenge.verification],
+          ].map(([label, content], index) => (
+            <article data-reveal style={`--reveal-delay: ${index * 70}ms`}>
+              <span>0{index + 1}</span>
+              <h3>{label}</h3>
+              <p>{content}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="project-detail-band project-detail-band--results" aria-labelledby="results-title">
+      <div class="shell project-results-grid">
+        <div data-reveal>
+          <p class="eyebrow">05 / RESULT</p>
+          <h2 id="results-title">结果与验证</h2>
+          <ul>
+            {detail.outcomes.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+        <div data-reveal>
+          <p class="eyebrow">06 / LEARNING</p>
+          <h2>项目收获</h2>
+          <ul>
+            {detail.learnings.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+      </div>
+      <div class="shell project-next-step" data-reveal>
+        <span>NEXT STEP</span>
+        <p>{detail.nextStep}</p>
+      </div>
+    </section>
+
+    <nav class="project-detail-nav" aria-label="其他项目">
+      <div class="shell project-detail-nav__inner">
+        <a href={projectHref(previous.slug)}>
+          <ArrowLeft size={17} stroke-width={1.8} />
+          <span>
+            <small>PREVIOUS</small>
+            {previous.name}
+          </span>
+        </a>
+        <a href={projectHref(next.slug)}>
+          <span>
+            <small>NEXT</small>
+            {next.name}
+          </span>
+          <ArrowRight size={17} stroke-width={1.8} />
+        </a>
+      </div>
+    </nav>
+  </main>
+  <Footer />
+</BaseLayout>

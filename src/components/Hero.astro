@@ -1,0 +1,168 @@
+---
+import { ArrowDown, FileText } from "lucide-astro";
+import { portfolio } from "../data/portfolio";
+import InteractiveField from "./InteractiveField.astro";
+import SplitFlapText from "./SplitFlapText.jsx";
+
+const { profile, focus } = portfolio;
+const signalDots = Array.from({ length: 24 });
+---
+
+<section class="hero" id="top" aria-labelledby="hero-title">
+  <InteractiveField name={profile.name} />
+
+  <div class="hero-rail" aria-hidden="true">
+    <span>01</span>
+    <i></i>
+    <span>04</span>
+  </div>
+
+  <div class="shell hero-inner">
+    <div class="hero-topline hero-enter hero-enter--one">
+      <span class="hero-coordinate">PORTFOLIO / 01</span>
+    </div>
+
+    <div class="hero-main">
+      <div class="hero-role-anchor">
+        <div class="hero-role hero-enter hero-enter--two">
+          <span class="hero-role-label" aria-hidden="true">ROLE /</span>
+          <SplitFlapText
+            client:load
+            words={profile.roles.map((role) => role.toUpperCase())}
+            flipDuration={0.1}
+            stagger={0.035}
+            cycleDelay={2800}
+            flipsPerChar={5}
+            tileColor="var(--split-flap-tile)"
+            textColor="var(--split-flap-ink)"
+            tileRadius={4}
+            gap={4}
+            fontSize={30}
+            padTo={15}
+            className="hero-role-board"
+          />
+        </div>
+      </div>
+
+      <div class="hero-copy" data-hero-copy>
+        <div class="hero-tilt" data-hero-tilt>
+          <p class="hero-overline" data-tilt-layer data-tilt-depth="0.35">WELCOME</p>
+          <h1 id="hero-title" data-tilt-layer data-tilt-depth="0.7">
+            <span class="hero-greeting">Hi, I&apos;m</span>
+            <span class="hero-name" data-hero-name>{profile.name}</span>
+          </h1>
+
+          <div class="hero-buttons" data-tilt-layer data-tilt-depth="1">
+            <a class="button button--primary" href="#projects">
+              查看项目
+              <ArrowDown size={17} stroke-width={1.8} />
+            </a>
+            {profile.resume && (
+              <a class="button button--secondary" href={profile.resume}>
+                <FileText size={17} stroke-width={1.8} />
+                简历
+              </a>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <aside class="hero-visual-meta hero-enter hero-enter--four" aria-hidden="true">
+        <div class="hero-signal-grid">
+          {signalDots.map(() => <span></span>)}
+        </div>
+        <p>BACKEND / AI<br />JAVA / PYTHON</p>
+        <strong>01</strong>
+      </aside>
+    </div>
+
+    <div class="hero-footer hero-enter hero-enter--five">
+      <dl class="hero-facts">
+        {focus.map((item) => (
+          <div>
+            <dt>{item.label}</dt>
+            <dd>{item.value}</dd>
+          </div>
+        ))}
+      </dl>
+      <a class="scroll-cue" href="#projects" aria-label="向下查看项目">
+        <span>SCROLL TO EXPLORE</span>
+        <ArrowDown size={16} stroke-width={1.6} />
+      </a>
+    </div>
+  </div>
+</section>
+
+<script>
+  const hero = document.querySelector<HTMLElement>(".hero");
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (hero && !reducedMotion) {
+    hero.classList.add("is-particle-loading");
+    const revealHero = () => {
+      hero.classList.remove("is-particle-loading");
+      hero.classList.add("is-particle-ready");
+    };
+    window.addEventListener("hero-particles-ready", revealHero, { once: true });
+    window.setTimeout(revealHero, 2600);
+  }
+
+  const tilt = document.querySelector<HTMLElement>("[data-hero-tilt]");
+  const tiltLayers = tilt?.querySelectorAll<HTMLElement>("[data-tilt-layer]") ?? [];
+
+  if (hero && tilt && !reducedMotion) {
+    let frame = 0;
+    let targetX = 0;
+    let targetY = 0;
+    let currentX = 0;
+    let currentY = 0;
+
+    const renderTilt = () => {
+      currentX += (targetX - currentX) * 0.12;
+      currentY += (targetY - currentY) * 0.12;
+
+      tilt.style.transform = `perspective(1100px) rotateX(${-currentY * 4.2}deg) rotateY(${currentX * 5.2}deg)`;
+      tiltLayers.forEach((layer) => {
+        const depth = Number(layer.dataset.tiltDepth || 0);
+        layer.style.transform = `translate3d(${currentX * depth * 10}px, ${currentY * depth * 8}px, ${depth * 18}px)`;
+      });
+
+      if (Math.abs(targetX - currentX) > 0.001 || Math.abs(targetY - currentY) > 0.001) {
+        frame = requestAnimationFrame(renderTilt);
+      } else {
+        frame = 0;
+      }
+    };
+
+    const scheduleTilt = () => {
+      if (!frame) frame = requestAnimationFrame(renderTilt);
+    };
+
+    hero.addEventListener("pointermove", (event) => {
+      const bounds = tilt.getBoundingClientRect();
+      const insideTilt =
+        event.clientX >= bounds.left &&
+        event.clientX <= bounds.right &&
+        event.clientY >= bounds.top &&
+        event.clientY <= bounds.bottom;
+
+      if (!insideTilt) {
+        targetX = 0;
+        targetY = 0;
+        scheduleTilt();
+        return;
+      }
+
+      targetX = Math.max(-1, Math.min(1, ((event.clientX - bounds.left) / bounds.width - 0.5) * 2));
+      targetY = Math.max(-1, Math.min(1, ((event.clientY - bounds.top) / bounds.height - 0.5) * 2));
+      scheduleTilt();
+    });
+
+    hero.addEventListener("pointerleave", () => {
+      targetX = 0;
+      targetY = 0;
+      scheduleTilt();
+    });
+  }
+
+</script>

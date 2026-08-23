@@ -1,0 +1,59 @@
+---
+import "../styles/section-dots.css";
+
+const sections = [
+  { id: "top", label: "首页" },
+  { id: "projects", label: "作品集" },
+  { id: "journey", label: "时间线" },
+  { id: "about", label: "关于" },
+];
+---
+
+<nav class="section-dots" aria-label="页面位置" data-section-dots>
+  {sections.map((section, index) => (
+    <a
+      class:list={["section-dot", { "is-active": index === 0 }]}
+      href={`#${section.id}`}
+      aria-label={section.label}
+      aria-current={index === 0 ? "location" : undefined}
+      title={section.label}
+      data-section-dot={section.id}
+    ></a>
+  ))}
+</nav>
+
+<script>
+  const navigation = document.querySelector<HTMLElement>("[data-section-dots]");
+  const dots = Array.from(
+    navigation?.querySelectorAll<HTMLAnchorElement>("[data-section-dot]") ?? [],
+  );
+  const targets = dots
+    .map((dot) => ({ dot, section: document.getElementById(dot.dataset.sectionDot ?? "") }))
+    .filter((item): item is { dot: HTMLAnchorElement; section: HTMLElement } => Boolean(item.section));
+
+  let frame = 0;
+  const updateActiveDot = () => {
+    frame = 0;
+    const marker = window.innerHeight * 0.48;
+    const active = targets.reduce((closest, item) => {
+      const distance = Math.abs(item.section.getBoundingClientRect().top - marker);
+      return distance < closest.distance ? { item, distance } : closest;
+    }, { item: targets[0], distance: Number.POSITIVE_INFINITY }).item;
+
+    targets.forEach(({ dot }) => {
+      const isActive = dot === active?.dot;
+      dot.classList.toggle("is-active", isActive);
+      if (isActive) dot.setAttribute("aria-current", "location");
+      else dot.removeAttribute("aria-current");
+    });
+  };
+
+  const requestUpdate = () => {
+    if (frame) return;
+    frame = window.requestAnimationFrame(updateActiveDot);
+  };
+
+  window.addEventListener("scroll", requestUpdate, { passive: true });
+  window.addEventListener("resize", requestUpdate);
+  updateActiveDot();
+</script>

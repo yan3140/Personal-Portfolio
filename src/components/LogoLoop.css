@@ -1,0 +1,44 @@
+.logo-loop {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent);
+}
+
+.logo-loop__track {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: max-content;
+  user-select: none;
+  will-change: transform;
+}
+
+.logo-loop__list {
+  display: flex;
+  align-items: center;
+  gap: var(--logo-loop-gap);
+  margin: 0;
+  padding: 0 var(--logo-loop-gap) 0 0;
+  list-style: none;
+}
+
+.logo-loop__item {
+  flex: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-loop {
+    overflow-x: auto;
+    mask-image: none;
+  }
+
+  .logo-loop__track {
+    transform: none !important;
+    will-change: auto;
+  }
+
+  .logo-loop__list:not(:first-child) {
+    display: none;
+  }
+}

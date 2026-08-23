@@ -1,0 +1,23 @@
+---
+import { portfolio } from "../data/portfolio";
+import TechnologyField from "./TechnologyField.jsx";
+---
+
+<section
+  class="section screen-section capability-section"
+  id="capabilities"
+  aria-labelledby="capabilities-title"
+  data-screen-section
+>
+  <div class="shell capability-inner" data-screen-content>
+    <header class="section-heading section-heading--split" data-reveal>
+      <div>
+        <p class="eyebrow">TECHNOLOGY FIELD</p>
+        <h2 id="capabilities-title">技术版图</h2>
+      </div>
+      <p>BACKEND / DATA / AI / ENGINEERING</p>
+    </header>
+
+    <TechnologyField client:load groups={portfolio.technologyGroups} />
+  </div>
+</section>

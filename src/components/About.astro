@@ -1,0 +1,174 @@
+---
+import {
+  ArrowUpRight,
+  Check,
+  Copy,
+  Download,
+  FileText,
+  Github,
+  GraduationCap,
+  Mail,
+} from "lucide-astro";
+import { portfolio } from "../data/portfolio";
+import "../styles/about.css";
+import TechnologyField from "./TechnologyField.jsx";
+
+const { profile, focus, technologyGroups, education } = portfolio;
+---
+
+<section
+  class="screen-section about-section"
+  id="about"
+  aria-labelledby="about-title"
+  data-screen-section
+>
+  <div class="shell about-inner" data-screen-content>
+    <header class="about-heading" data-reveal>
+      <p class="eyebrow">ABOUT / 04</p>
+      <h2 id="about-title">关于</h2>
+    </header>
+
+    <div class="about-flow">
+      <section class="about-flow-block" id="about-me" aria-labelledby="about-me-title" data-reveal>
+        <header class="about-block-heading">
+          <span>01 / ABOUT ME</span>
+          <h3 id="about-me-title">关于我</h3>
+        </header>
+        <div class="about-block-content">
+          <div class="about-bio">
+            <p class="about-lead">
+              你好！我是庞凌啸，华中农业大学计算机科学与技术专业本科在读，也是沸点工作室正式成员。
+            </p>
+            <p>
+              我主要使用 Java 和 Python，关注后端开发、数据库与 AI 应用，持续学习 MySQL、Redis、消息队列与系统设计等工程能力。
+            </p>
+            <p>
+              在个人学习项目中，我会从需求拆解、数据建模和接口实现一路做到联调测试，重点练习可靠异步流程、检索链路和完整项目交付。
+            </p>
+            <p>
+              在沸点工作室中，我以正式成员身份参与学习、协作与项目实践，希望继续在真实项目和实习中提升工程能力。
+            </p>
+          </div>
+          <dl class="about-facts">
+            {focus.map((item) => (
+              <div>
+                <dt>{item.label}</dt>
+                <dd>{item.value}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </section>
+
+      <section class="about-flow-block" id="education" aria-labelledby="education-title" data-reveal>
+        <header class="about-block-heading">
+          <span>02 / EDUCATION</span>
+          <h3 id="education-title">教育经历</h3>
+        </header>
+        <div class="about-block-content">
+          <article class="education-card">
+            <span class="education-card__icon" aria-hidden="true">
+              <GraduationCap size={30} stroke-width={1.7} />
+            </span>
+            <div>
+              <div class="education-card__title-row">
+                <h4>{education.school}</h4>
+                <div class="education-card__badges" aria-label="学校标签">
+                  {education.badges.map((badge) => <span>{badge}</span>)}
+                </div>
+              </div>
+              <p class="education-card__major">{education.major}</p>
+              <time>{education.period}</time>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="about-flow-block about-tech-block" id="tech-stack" aria-labelledby="tech-stack-title" data-reveal>
+        <header class="about-block-heading">
+          <span>03 / TECHNOLOGY STACK</span>
+          <h3 id="tech-stack-title">技术栈</h3>
+        </header>
+        <div class="about-block-content">
+          <p class="about-block-note">BACKEND / DATA / AI / ENGINEERING</p>
+          <TechnologyField client:load groups={technologyGroups} />
+        </div>
+      </section>
+
+      <section class="about-flow-block about-contact-block" id="contact" aria-labelledby="contact-title" data-reveal>
+        <header class="about-block-heading">
+          <span>04 / CONTACT</span>
+          <h3 id="contact-title">联系我</h3>
+        </header>
+        <div class="about-block-content">
+          <div class="contact-grid">
+            <div class="contact-card contact-card--resume" aria-disabled="true" title="简历暂未上传">
+              <span class="contact-card__icon" aria-hidden="true">
+                <FileText class="contact-card__icon-rest" size={24} stroke-width={1.8} />
+                <Download class="contact-card__icon-hover" size={24} stroke-width={1.8} />
+              </span>
+              <span class="contact-card__copy">
+                <strong>个人简历</strong>
+                <small>暂未上传</small>
+              </span>
+              <span class="contact-card__hint">下载</span>
+            </div>
+
+            <a class="contact-card" href={profile.github} target="_blank" rel="noreferrer">
+              <span class="contact-card__icon" aria-hidden="true">
+                <Github size={24} stroke-width={1.8} />
+              </span>
+              <span class="contact-card__copy">
+                <strong>GitHub</strong>
+                <small>github.com/yan3140</small>
+              </span>
+              <ArrowUpRight class="contact-card__action" size={19} stroke-width={1.8} aria-hidden="true" />
+            </a>
+
+            <button
+              class="contact-card contact-card--email"
+              type="button"
+              data-copy-email={profile.email}
+              aria-label={`复制邮箱 ${profile.email}`}
+            >
+              <span class="contact-card__icon" aria-hidden="true">
+                <Mail size={24} stroke-width={1.8} />
+              </span>
+              <span class="contact-card__copy">
+                <strong>Email</strong>
+                <small>{profile.email}</small>
+              </span>
+              <span class="contact-card__email-action" aria-live="polite">
+                <Copy size={16} stroke-width={1.8} aria-hidden="true" />
+                <span data-copy-label>复制</span>
+              </span>
+              <Check class="contact-card__check" size={18} stroke-width={1.8} aria-hidden="true" />
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-copy-email]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const email = button.dataset.copyEmail;
+      if (!email) return;
+
+      const label = button.querySelector<HTMLElement>("[data-copy-label]");
+      try {
+        await navigator.clipboard.writeText(email);
+        label && (label.textContent = "已复制");
+        button.classList.add("is-copied");
+      } catch {
+        label && (label.textContent = "复制失败");
+      }
+      window.setTimeout(() => {
+        label && (label.textContent = "复制");
+        button.classList.remove("is-copied");
+      }, 1800);
+    });
+  });
+</script>

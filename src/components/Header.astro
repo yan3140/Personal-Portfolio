@@ -1,0 +1,86 @@
+---
+import { Menu, Palette } from "lucide-astro";
+import HeaderDock from "./HeaderDock.jsx";
+
+const baseUrl = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const links = [
+  { id: "home", label: "首页", href: `${baseUrl}#top`, sectionId: "top" },
+  { id: "portfolio", label: "作品集", href: `${baseUrl}#projects`, sectionId: "projects" },
+  { id: "timeline", label: "时间线", href: `${baseUrl}#journey`, sectionId: "journey" },
+  { id: "about", label: "关于", href: `${baseUrl}#about`, sectionId: "about" },
+];
+
+---
+
+<header class="site-header" data-site-header>
+  <div class="shell header-inner">
+    <div class="brand-cluster">
+      <a class="brand" href={baseUrl} aria-label="返回首页">
+        <span class="brand-name">Lingxiao</span>
+      </a>
+      <button
+        class="style-toggle"
+        type="button"
+        aria-label="切换到浅色风格"
+        aria-pressed="false"
+        title="切换到浅色风格"
+        data-style-toggle
+      >
+        <Palette size={15} stroke-width={1.8} aria-hidden="true" />
+      </button>
+    </div>
+
+    <div class="header-dock">
+      <HeaderDock client:load links={links} />
+    </div>
+
+    <div class="header-actions">
+      <details class="mobile-menu">
+        <summary class="icon-button" aria-label="打开导航菜单" title="打开导航菜单">
+          <Menu size={20} stroke-width={1.8} />
+        </summary>
+        <nav aria-label="移动端导航">
+          {links.map((link) => <a href={link.href}>{link.label}</a>)}
+        </nav>
+      </details>
+    </div>
+  </div>
+</header>
+
+<script>
+  const styleToggle = document.querySelector<HTMLElement>("[data-style-toggle]");
+  const applyStyle = (style: "blue" | "light") => {
+    document.documentElement.dataset.style = style;
+    try {
+      localStorage.setItem("portfolio-style", style);
+    } catch {
+      // The selected style still applies for this page when storage is unavailable.
+    }
+    const isLight = style === "light";
+    const nextLabel = isLight ? "深色" : "浅色";
+    styleToggle?.setAttribute("aria-pressed", String(isLight));
+    styleToggle?.setAttribute("aria-label", `切换到${nextLabel}风格`);
+    styleToggle?.setAttribute("title", `切换到${nextLabel}风格`);
+    document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')?.setAttribute("content", isLight ? "#f8f5ff" : "#170834");
+    window.dispatchEvent(new Event("portfolio-style-change"));
+  };
+
+  styleToggle?.addEventListener("click", () => {
+    applyStyle(document.documentElement.dataset.style === "light" ? "blue" : "light");
+  });
+
+  applyStyle(document.documentElement.dataset.style === "light" ? "light" : "blue");
+
+  document.querySelectorAll(".mobile-menu nav a").forEach((link) => {
+    link.addEventListener("click", () => {
+      link.closest("details")?.removeAttribute("open");
+    });
+  });
+
+  const header = document.querySelector<HTMLElement>("[data-site-header]");
+  const syncHeader = () => header?.classList.toggle("is-scrolled", window.scrollY > 20);
+  window.addEventListener("scroll", syncHeader, { passive: true });
+  syncHeader();
+</script>

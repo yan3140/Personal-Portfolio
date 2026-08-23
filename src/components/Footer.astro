@@ -1,0 +1,14 @@
+---
+import { ArrowUp } from "lucide-astro";
+import { portfolio } from "../data/portfolio";
+---
+
+<footer class="site-footer">
+  <div class="shell footer-inner">
+    <p>© {new Date().getFullYear()} {portfolio.profile.name}</p>
+    <p class="footer-note">DESIGNED & BUILT WITH ASTRO</p>
+    <a class="back-to-top" href="#top" aria-label="返回页面顶部" title="返回页面顶部">
+      <ArrowUp size={18} stroke-width={1.8} />
+    </a>
+  </div>
+</footer>

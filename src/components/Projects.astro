@@ -1,0 +1,33 @@
+---
+import { portfolio } from "../data/portfolio";
+import ProjectAccordion from "./ProjectAccordion.jsx";
+
+const baseUrl = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+---
+
+<section
+  class="section screen-section projects-section"
+  id="projects"
+  aria-labelledby="projects-title"
+  data-screen-section
+>
+  <div class="shell" data-screen-content>
+    <header class="section-heading section-heading--split" data-reveal>
+      <div>
+        <p class="eyebrow">PROJECTS / 03</p>
+        <h2 id="projects-title">项目经历</h2>
+      </div>
+      <p>知识工程 · AIOps · 智慧育种</p>
+    </header>
+
+    <ProjectAccordion
+      client:load
+      projects={portfolio.projects}
+      defaultIndex={0}
+      expandRatio={0.62}
+      projectBase={`${baseUrl}projects/`}
+    />
+  </div>
+</section>

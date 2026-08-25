@@ -4,7 +4,10 @@ export interface Project {
   slug: string;
   number: string;
   name: string;
+  badge: string;
   category: string;
+  period: string;
+  proof: string;
   summary: string;
   contribution: string;
   highlights: string[];
@@ -51,7 +54,10 @@ export const portfolio = {
       slug: "knode",
       number: "01",
       name: "知屿 Knode",
-      category: "个人学习项目 · 知识工程 / RAG",
+      badge: "个人项目",
+      category: "知识工程 / RAG",
+      period: "2025.08 — 至今",
+      proof: "365 个自动化用例全部通过；峰值混合压测覆盖 100,000 次请求，warm 复测吞吐 8,009 req/s。",
       summary:
         "支持知识版本、混合检索、可靠索引与引用问答的双空间知识管理平台。",
       contribution:
@@ -70,7 +76,10 @@ export const portfolio = {
       slug: "opspilot",
       number: "02",
       name: "OpsPilot",
-      category: "个人学习项目 · AIOps / Java 后端",
+      badge: "个人项目",
+      category: "AIOps / 可靠事件",
+      period: "2026.07 — 至今",
+      proof: "47 个知识库与诊断工具聚焦测试通过；曾将 16,269 条 Kafka 积压恢复至 0。",
       summary:
         "融合可靠告警事件、混合 RAG 与 Spring AI Graph 的 Java 智能运维诊断平台。",
       contribution:
@@ -89,7 +98,10 @@ export const portfolio = {
       slug: "greenhouse",
       number: "03",
       name: "新疆南繁智慧育种平台",
-      category: "课程小组项目 · RuoYi 二次开发",
+      badge: "教师科研项目",
+      category: "智慧育种 / 真实业务系统",
+      period: "2026.03 — 至今",
+      proof: "覆盖 CSV、VCF、图片 3 类育种数据链路；现有测试报告汇总 47 项 JUnit 测试，0 失败。",
       summary:
         "负责育种数据全流程与系统权限模块，实现文件上传、级联关联、树形检索、分析任务和角色授权。",
       contribution:

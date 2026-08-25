@@ -1,5 +1,13 @@
 ---
-import { ArrowLeft, ArrowRight, ArrowUpRight, Code2 } from "lucide-astro";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ArrowUpRight,
+  BriefcaseBusiness,
+  Building2,
+  CalendarDays,
+  Code2,
+} from "lucide-astro";
 import Footer from "../../components/Footer.astro";
 import Header from "../../components/Header.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
@@ -41,157 +49,101 @@ const projectHref = (slug: string) => `${baseUrl}projects/${slug}/`;
 <BaseLayout title={`${project.name} | Lingxiao Pang`} description={project.summary}>
   <Header />
   <main class="project-detail-page" data-tone={project.tone}>
-    <section class="project-detail-hero" aria-labelledby="project-title">
-      <div class="shell project-detail-hero__inner">
+    <section class="project-detail-intro" aria-labelledby="project-title">
+      <div class="shell project-detail-intro__inner">
         <a class="project-back" href={`${baseUrl}#projects`}>
           <ArrowLeft size={16} stroke-width={1.8} />
-          返回项目
+          返回作品集
         </a>
 
-        <div class="project-detail-hero__grid">
-          <div class="project-detail-hero__copy">
-            <p class="eyebrow">PROJECT / {project.number}</p>
-            <p class="project-detail-kicker">{detail.shortLabel}</p>
-            <h1 id="project-title">{project.name}</h1>
-            <p class="project-detail-lead">{detail.lead}</p>
-          </div>
+        <p class="project-detail-badge">{detail.type}</p>
+        <h1 id="project-title">{project.name}</h1>
+        <p class="project-detail-label">{detail.shortLabel}</p>
 
-          <aside class="project-detail-meta" aria-label="项目概览">
-            <dl>
-              <div>
-                <dt>STATUS</dt>
-                <dd>{project.status}</dd>
-              </div>
-              <div>
-                <dt>TYPE</dt>
-                <dd>{project.category}</dd>
-              </div>
-              <div>
-                <dt>ROLE</dt>
-                <dd>个人学习与工程实践</dd>
-              </div>
-            </dl>
-            <div class="project-detail-stack" aria-label="项目技术栈">
-              {project.stack.map((technology) => <span>{technology}</span>)}
+        <div class="project-detail-meta" aria-label="项目基本信息">
+          <span><BriefcaseBusiness size={17} stroke-width={1.7} />{detail.role}</span>
+          <span><CalendarDays size={17} stroke-width={1.7} />{detail.period}</span>
+          <span><Building2 size={17} stroke-width={1.7} />{detail.organization}</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="project-detail-content" aria-label="项目详情">
+      <div class="shell project-detail-layout">
+        <div class="project-detail-main">
+          <section class="project-copy-section" aria-labelledby="overview-title" data-reveal>
+            <h2 id="overview-title"><i aria-hidden="true"></i>项目概述</h2>
+            <p class="project-overview">{detail.overview}</p>
+          </section>
+
+          <section class="project-copy-section" aria-labelledby="metrics-title" data-reveal>
+            <h2 id="metrics-title"><i aria-hidden="true"></i>验证数据</h2>
+            <div class="project-metrics">
+              {detail.metrics.map((metric) => (
+                <article>
+                  <strong>{metric.value}</strong>
+                  <span>{metric.label}</span>
+                  <p>{metric.note}</p>
+                </article>
+              ))}
             </div>
-          </aside>
+          </section>
+
+          <section class="project-copy-section" aria-labelledby="results-title" data-reveal>
+            <h2 id="results-title"><i aria-hidden="true"></i>核心成果</h2>
+            <ol class="project-results">
+              {detail.results.map((result, index) => (
+                <li>
+                  <span>{index + 1}</span>
+                  <div>
+                    <h3>{result.title}</h3>
+                    <p>{result.description}</p>
+                    <small>{result.evidence}</small>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </section>
         </div>
 
-        {(project.repository || project.demo) && (
-          <div class="project-detail-actions">
+        <aside class="project-sidebar" aria-label="项目补充信息">
+          <section class="project-side-panel">
+            <h2>技术栈</h2>
+            <div class="project-stack">
+              {detail.stack.map((technology) => <span>{technology}</span>)}
+            </div>
+          </section>
+
+          <section class="project-side-panel">
+            <h2>涉及技能方向</h2>
+            <div class="project-skill-groups">
+              {detail.skillGroups.map((group) => (
+                <div>
+                  <h3>{group.title}</h3>
+                  <p>{group.items.join(" / ")}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section class="project-side-panel project-side-panel--info">
+            <h2>项目信息</h2>
+            <dl>
+              <div><dt>类型</dt><dd>{detail.type}</dd></div>
+              <div><dt>角色</dt><dd>{detail.role}</dd></div>
+              <div><dt>周期</dt><dd>{detail.period}</dd></div>
+              <div><dt>状态</dt><dd>{detail.status}</dd></div>
+            </dl>
+
             {project.repository && (
-              <a class="detail-action detail-action--primary" href={project.repository} target="_blank" rel="noreferrer">
+              <a class="project-source" href={project.repository} target="_blank" rel="noreferrer">
                 <Code2 size={17} stroke-width={1.8} />
-                SOURCE
+                查看源码
                 <ArrowUpRight size={15} stroke-width={1.8} />
               </a>
             )}
-            {project.demo && (
-              <a class="detail-action" href={project.demo} target="_blank" rel="noreferrer">
-                LIVE DEMO
-                <ArrowUpRight size={15} stroke-width={1.8} />
-              </a>
-            )}
-          </div>
-        )}
-      </div>
-    </section>
-
-    <section class="project-detail-band" aria-labelledby="overview-title">
-      <div class="shell project-detail-split">
-        <div class="project-detail-heading" data-reveal>
-          <p class="eyebrow">01 / OVERVIEW</p>
-          <h2 id="overview-title">项目背景</h2>
-        </div>
-        <div class="project-detail-prose" data-reveal>
-          <p>{detail.context}</p>
-          <p>{detail.goal}</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="project-detail-band" aria-labelledby="features-title">
-      <div class="shell">
-        <header class="project-detail-section-head" data-reveal>
-          <p class="eyebrow">02 / SYSTEM</p>
-          <h2 id="features-title">核心实现</h2>
-        </header>
-        <div class="project-feature-list">
-          {detail.features.map((feature, index) => (
-            <article class="project-feature-row" data-reveal style={`--reveal-delay: ${index * 80}ms`}>
-              <span>0{index + 1}</span>
-              <h3>{feature.title}</h3>
-              <p>{feature.description}</p>
-            </article>
-          ))}
-        </div>
-      </div>
-    </section>
-
-    <section class="project-detail-band project-detail-band--accent" aria-labelledby="work-title">
-      <div class="shell project-detail-split">
-        <div class="project-detail-heading" data-reveal>
-          <p class="eyebrow">03 / MY WORK</p>
-          <h2 id="work-title">我完成的工作</h2>
-        </div>
-        <ol class="project-work-list" data-reveal>
-          {detail.responsibilities.map((item, index) => (
-            <li>
-              <span>0{index + 1}</span>
-              <p>{item}</p>
-            </li>
-          ))}
-        </ol>
-      </div>
-    </section>
-
-    <section class="project-detail-band" aria-labelledby="challenge-title">
-      <div class="shell">
-        <header class="project-detail-section-head project-detail-section-head--wide" data-reveal>
-          <div>
-            <p class="eyebrow">04 / DEBUGGING</p>
-            <h2 id="challenge-title">一个真实问题</h2>
-          </div>
-          <p>{detail.challenge.title}</p>
-        </header>
-
-        <div class="project-debug-flow">
-          {[
-            ["PROBLEM", detail.challenge.problem],
-            ["INVESTIGATION", detail.challenge.investigation],
-            ["SOLUTION", detail.challenge.solution],
-            ["VERIFICATION", detail.challenge.verification],
-          ].map(([label, content], index) => (
-            <article data-reveal style={`--reveal-delay: ${index * 70}ms`}>
-              <span>0{index + 1}</span>
-              <h3>{label}</h3>
-              <p>{content}</p>
-            </article>
-          ))}
-        </div>
-      </div>
-    </section>
-
-    <section class="project-detail-band project-detail-band--results" aria-labelledby="results-title">
-      <div class="shell project-results-grid">
-        <div data-reveal>
-          <p class="eyebrow">05 / RESULT</p>
-          <h2 id="results-title">结果与验证</h2>
-          <ul>
-            {detail.outcomes.map((item) => <li>{item}</li>)}
-          </ul>
-        </div>
-        <div data-reveal>
-          <p class="eyebrow">06 / LEARNING</p>
-          <h2>项目收获</h2>
-          <ul>
-            {detail.learnings.map((item) => <li>{item}</li>)}
-          </ul>
-        </div>
-      </div>
-      <div class="shell project-next-step" data-reveal>
-        <span>NEXT STEP</span>
-        <p>{detail.nextStep}</p>
+          </section>
+        </aside>
       </div>
     </section>
 
@@ -199,16 +151,10 @@ const projectHref = (slug: string) => `${baseUrl}projects/${slug}/`;
       <div class="shell project-detail-nav__inner">
         <a href={projectHref(previous.slug)}>
           <ArrowLeft size={17} stroke-width={1.8} />
-          <span>
-            <small>PREVIOUS</small>
-            {previous.name}
-          </span>
+          <span><small>PREVIOUS</small>{previous.name}</span>
         </a>
         <a href={projectHref(next.slug)}>
-          <span>
-            <small>NEXT</small>
-            {next.name}
-          </span>
+          <span><small>NEXT</small>{next.name}</span>
           <ArrowRight size={17} stroke-width={1.8} />
         </a>
       </div>

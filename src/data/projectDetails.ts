@@ -33,14 +33,14 @@ export interface ProjectDetail {
 export const projectDetails: ProjectDetail[] = [
   {
     slug: "knode",
-    shortLabel: "KNOWLEDGE ENGINEERING / RAG",
+    shortLabel: "BACKEND PLATFORM / KNOWLEDGE ENGINEERING",
     type: "个人学习项目",
     role: "独立开发",
     period: "2025.08 — 至今",
     organization: "个人项目",
-    status: "核心功能完成，持续维护",
+    status: "工程验收通过，生产灰度未开放",
     overview:
-      "面向文章与个人资料的双空间知识工程平台。我在原内容平台上扩展知识库、可靠索引、混合检索与异步 RAG Agent，让文档版本、检索结果和最终引用能够相互追溯。",
+      "从个人内容平台持续演进而来的模块化后端项目。我围绕文章、评论、搜索与通知完善缓存和可靠任务链路，并进一步扩展双空间知识库、混合检索和异步 RAG Agent，让内容发布、知识沉淀、检索与引用问答形成完整闭环。",
     metrics: [
       {
         value: "365",
@@ -48,82 +48,82 @@ export const projectDetails: ProjectDetail[] = [
         note: "Python 246 / Java 116 / Vue 3，0 失败",
       },
       {
-        value: "8,009",
-        label: "req/s",
-        note: "1000 VU、100000 请求 warm 复测",
+        value: "10,000",
+        label: "条索引任务成功",
+        note: "ES Outbox 最终 SUCCEEDED，PENDING 为 0",
       },
       {
-        value: "0.034%",
-        label: "HTTP 失败率",
-        note: "同轮压测 P95 为 222ms",
+        value: "8,009",
+        label: "req/s warm 复测",
+        note: "1000 VU / 100000 次混合请求",
       },
     ],
     results: [
       {
-        title: "双空间与可追溯版本",
+        title: "模块化内容平台与权限边界",
         description:
-          "系统库承载公开文章，个人库隔离私有资料；通过不可变文档版本、内容哈希与稳定 Chunk ID 保存来源、版本和引用边界。",
-        evidence: "验收覆盖权限隔离、版本切换、引用有效性与失败恢复路径。",
+          "以后端多模块拆分通用、权限、内容、博客与管理职责，并以 scope 隔离前台和后台会话；在内容平台上新增知识库领域，将文章和个人资料沉淀为可版本化知识。",
+        evidence: "前后台 Token、Cookie 与 API 路径独立；博客 Token 越权访问管理接口返回 HTTP 403。",
       },
       {
-        title: "可靠索引与混合检索",
+        title: "评论查询与缓存一致性优化",
         description:
-          "以 MySQL Outbox 记录索引任务，经 Redis Stream 可靠投递，再由 Elasticsearch 组合 BM25、向量召回与 RRF 融合。",
-        evidence: "365 个自动化用例全部通过，失败、重试、租约和死信分支均有覆盖。",
+          "将评论树的逐层查询改为根评论分页、子评论批量查询和用户批量装配；浏览量采用 Redis Hash、dirty Set 与 Lua 防重，并在数据库成功后按快照条件清理脏标记。",
+        evidence: "评论非空页由最坏 3 + 2R 条 SQL 收敛为固定 4 条；真实接口返回 HTTP 200。",
       },
       {
-        title: "用评测决定检索策略",
+        title: "可补偿的异步任务链路",
         description:
-          "对 Multi Query 方案进行对照评测；复杂题策略未带来召回收益且显著增加错误率和尾延迟，因此保留实验开关并自动回退稳定方案。",
-        evidence: "稳定方案 Recall@10 60.83%、错误率 0%、P95 8.049s。",
+          "以 MySQL Outbox 作为事实源，Redis Stream 承担削峰和消费；索引同步、通知投递与缓存失效统一具备幂等、租约、重试、死信和人工重放能力。",
+        evidence: "10,000 条 ES 索引任务最终全部成功；面向 10,000 粉丝的发布使用事件记录避免同步写扩散。",
       },
       {
-        title: "高并发下的可验证表现",
+        title: "有评测门禁的知识问答 Agent",
         description:
-          "对详情、评论、浏览量、热榜和搜索等平台热路径执行千级并发与十万级请求压测，并针对连接拒绝和消费积压继续调优。",
-        evidence: "warm 复测 100000 请求：8009 req/s、P95 222ms、HTTP 失败率 0.034%。",
+          "Java 负责知识库权限与短期身份令牌，Python LangGraph 异步执行检索和生成，PostgreSQL 保存 Run 与事件供 SSE 断点恢复；检索策略必须通过冻结数据集门禁。",
+        evidence: "365 项自动化测试通过、4 个真实异步 Run 成功；Multi Query 未通过门禁后保持 0% 并回退稳定策略。",
       },
     ],
-    stack: ["Java 17", "Spring Boot", "Redis Stream", "Elasticsearch", "FastAPI", "LangGraph", "PostgreSQL"],
+    stack: ["Java 17", "Spring Boot", "MySQL", "Redis Stream", "Elasticsearch", "FastAPI", "LangGraph", "PostgreSQL"],
     skillGroups: [
-      { title: "后端与框架", items: ["Spring Boot", "FastAPI", "LangGraph"] },
-      { title: "数据与检索", items: ["MySQL", "PostgreSQL", "Redis", "Elasticsearch"] },
-      { title: "工程验证", items: ["JUnit", "Pytest", "k6", "SSE"] },
+      { title: "后端与架构", items: ["Spring Boot", "模块化单体", "RBAC", "FastAPI"] },
+      { title: "可靠性与检索", items: ["Outbox", "Redis Stream", "Elasticsearch", "RRF"] },
+      { title: "AI 与工程验证", items: ["LangGraph", "SSE", "JUnit", "Pytest", "k6"] },
     ],
   },
   {
     slug: "opspilot",
-    shortLabel: "AIOPS / RELIABLE EVENTS",
+    shortLabel: "AIOPS / EVIDENCE-DRIVEN DIAGNOSIS",
     type: "个人学习项目",
     role: "独立开发",
     period: "2026.07 — 至今",
     organization: "个人项目",
-    status: "核心链路完成",
+    status: "核心能力完成，自动诊断 Worker 待接通",
     overview:
-      "从告警接入、可靠事件与证据采集出发的智能运维诊断平台。重点不是让模型直接猜测原因，而是让诊断结论建立在可追踪的指标、日志、知识文档和运行状态上。",
+      "模块化单体架构的智能运维诊断平台。从 Alertmanager 告警接入开始，经 Redis 抑制、Transactional Outbox、Kafka、诊断任务、Prometheus/Loki/RAG 证据和 Spring AI Graph 编排，最终在 SSE 工作台呈现可追踪的诊断过程。",
     metrics: [
       {
+        value: "8.92ms",
+        label: "告警风暴 P95",
+        note: "1000 VU / 10000 次 paced 请求",
+      },
+      {
+        value: "50 / 50",
+        label: "人工复核根因命中",
+        note: "离线构造样本，不代表生产准确率",
+      },
+      {
         value: "16,269",
-        label: "条事件完整恢复",
-        note: "Kafka lag 从 16269 降至 0",
-      },
-      {
-        value: "47",
-        label: "聚焦测试通过",
-        note: "知识库与诊断工具相关测试",
-      },
-      {
-        value: "0",
-        label: "恢复后积压",
-        note: "任务数同步增长至 16269",
+        label: "条积压事件恢复",
+        note: "Kafka lag 最终降至 0",
       },
     ],
     results: [
       {
-        title: "告警抑制与可靠事件链",
+        title: "告警风暴下的可靠接入",
         description:
-          "Alertmanager Webhook 生成稳定告警指纹，Redis Lua 原子完成限流与窗口去重，再通过 PostgreSQL Transactional Outbox 和 Kafka 投递事件。",
-        evidence: "幂等键、状态约束、重试与死信路径均进入聚焦测试范围。",
+          "Alertmanager Webhook 生成稳定指纹，Redis Lua 原子完成全局限流与同指纹去重；首次告警与 Outbox 在 PostgreSQL 同一事务提交，再异步发布到 Kafka。",
+        evidence: "1000 VU、10000 次 paced 风暴：P95 8.92ms、HTTP 错误率 0%、抑制率 100%；主工程 103 项测试 0 失败/错误。",
       },
       {
         title: "定位 16,269 条 Kafka 积压",
@@ -132,23 +132,23 @@ export const projectDetails: ProjectDetail[] = [
         evidence: "重启正确配置后 lag 16269 → 0，diagnosis_task 0 → 16269。",
       },
       {
-        title: "版本化知识与双路召回",
+        title: "真实模型的离线根因评测",
         description:
-          "文档通过 SHA-256 去重和不可变版本发布，使用 pg_trgm 关键词检索与 pgvector 向量检索，再通过 RRF 合并候选。",
-        evidence: "47 个知识库与诊断工具聚焦测试全部通过。",
+          "为 Redis、PostgreSQL、Kafka、JVM、Kubernetes、DNS 等故障构造包含指标、日志和知识摘要的评测集，要求模型输出结构化根因并引用输入中的 evidenceId。",
+        evidence: "50 条真实模型调用 0 失败；自动 Top-1 为 49/50，人工复核为 50/50，8 并发将耗时由约 5 分 38 秒降至约 50 秒。",
       },
       {
-        title: "证据约束的诊断流程",
+        title: "证据约束与诚实降级",
         description:
-          "采集 Prometheus 指标与 Loki 日志，由 Spring AI Graph 编排诊断；结构化输出经过程序校验，证据不足时明确降级。",
-        evidence: "状态机保留失败、重试、降级和引用追溯路径，不隐藏尚未完成的自动 worker。",
+          "Prometheus、Loki 和版本化知识库只通过受控工具进入诊断；Spring AI Graph 输出需经过字段、引用和危险动作校验，证据不足或模型不可用时返回确定性降级建议。",
+        evidence: "真实语义 RAG 准确率尚未评测，Kafka 任务到自动诊断 Worker 尚未接通；页面不将两项写成已完成能力。",
       },
     ],
     stack: ["Java 21", "Spring Boot", "PostgreSQL", "pgvector", "Redis", "Kafka", "Spring AI Graph"],
     skillGroups: [
       { title: "可靠事件", items: ["Kafka", "Outbox", "Redis Lua"] },
-      { title: "数据与检索", items: ["PostgreSQL", "pgvector", "pg_trgm"] },
-      { title: "诊断与观测", items: ["Spring AI Graph", "Prometheus", "Loki", "SSE"] },
+      { title: "诊断与检索", items: ["Spring AI Graph", "pgvector", "RRF", "Evidence Gate"] },
+      { title: "观测与验证", items: ["Prometheus", "Loki", "SSE", "JUnit", "Testcontainers", "k6"] },
     ],
   },
   {

@@ -55,11 +55,11 @@ export const portfolio = {
       number: "01",
       name: "知屿 Knode",
       badge: "个人项目",
-      category: "知识工程 / RAG",
+      category: "后端平台 / 知识工程",
       period: "2025.08 — 至今",
-      proof: "365 个自动化用例全部通过；峰值混合压测覆盖 100,000 次请求，warm 复测吞吐 8,009 req/s。",
+      proof: "365 项自动化测试通过；10,000 条索引任务最终全部成功，十万请求 warm 复测达到 8,009 req/s。",
       summary:
-        "支持知识版本、混合检索、可靠索引与引用问答的双空间知识管理平台。",
+        "从内容平台扩展到可靠异步任务、混合检索与可追溯问答的一体化后端项目。",
       contribution:
         "在原有内容平台基础上扩展知识库领域模块、内部检索合约、Python Agent 服务和问答页面，完成 Java、Python 与 Vue 之间的端到端链路。",
       highlights: [
@@ -67,8 +67,8 @@ export const portfolio = {
         "使用 MySQL Outbox、Redis Stream 和 Elasticsearch 构建可重试索引链路，并通过 BM25、向量检索与 RRF 完成候选融合。",
         "由 Java 校验知识库权限并签发短期身份令牌，LangGraph 异步 Run 支持事件持久化、SSE 恢复和引用校验。",
       ],
-      stack: ["Java 17", "Spring Boot", "Redis Stream", "Elasticsearch", "FastAPI", "LangGraph", "PostgreSQL"],
-      status: "基本完成 · 持续维护",
+      stack: ["Java 17", "Spring Boot", "MySQL", "Redis Stream", "Elasticsearch", "FastAPI", "LangGraph"],
+      status: "工程验收通过 · 持续维护",
       tone: "blue",
       repository: "https://github.com/yan3140/Knode",
     },
@@ -77,9 +77,9 @@ export const portfolio = {
       number: "02",
       name: "OpsPilot",
       badge: "个人项目",
-      category: "AIOps / 可靠事件",
+      category: "AIOps / 证据化诊断",
       period: "2026.07 — 至今",
-      proof: "47 个知识库与诊断工具聚焦测试通过；曾将 16,269 条 Kafka 积压恢复至 0。",
+      proof: "1000 VU 告警风暴实测 10,000 次请求，P95 8.92ms、HTTP 错误率 0%、同指纹抑制率 100%。",
       summary:
         "融合可靠告警事件、混合 RAG 与 Spring AI Graph 的 Java 智能运维诊断平台。",
       contribution:
@@ -89,8 +89,8 @@ export const portfolio = {
         "将知识库拆分为逻辑文档、不可变版本、发布指针和持久化索引任务，支持租约、退避、死信与人工重放。",
         "把告警、指标、日志和组合症状组织为多路查询，通过双层 RRF 形成可追溯证据，再交给 Spring AI Graph 生成受约束诊断。",
       ],
-      stack: ["Java 21", "Spring Boot", "PostgreSQL", "pgvector", "Redis", "Kafka", "Spring AI Graph"],
-      status: "核心链路已完成",
+      stack: ["Java 21", "Spring Boot", "PostgreSQL", "Redis", "Kafka", "pgvector", "Spring AI Graph"],
+      status: "核心能力完成 · Worker 待接通",
       tone: "green",
       repository: "https://github.com/yan3140/opspilot-aiops",
     },

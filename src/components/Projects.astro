@@ -1,6 +1,6 @@
 ---
-import { ArrowUpRight, Folder } from "lucide-astro";
 import { portfolio } from "../data/portfolio";
+import ProjectAccordion from "./ProjectAccordion.jsx";
 
 const baseUrl = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -16,199 +16,18 @@ const baseUrl = import.meta.env.BASE_URL.endsWith("/")
   <div class="shell" data-screen-content>
     <header class="section-heading section-heading--split" data-reveal>
       <div>
-        <p class="eyebrow">SELECTED WORK / 03</p>
-        <h2 id="projects-title">项目作品</h2>
+        <p class="eyebrow">PROJECTS / 03</p>
+        <h2 id="projects-title">项目经历</h2>
       </div>
-      <p>只展示解决的问题与可核验结果。</p>
+      <p>知识工程 · AIOps · 智慧育种</p>
     </header>
 
-    <div class="project-grid" role="list">
-      {
-        portfolio.projects.map((project, index) => (
-          <a
-            class={`project-card${index === 0 ? " project-card--featured" : ""}`}
-            href={`${baseUrl}projects/${project.slug}/`}
-            role="listitem"
-            data-reveal
-            style={`--reveal-delay: ${index * 90}ms`}
-          >
-            <div class="project-card__topline">
-              <Folder size={28} stroke-width={1.65} aria-hidden="true" />
-              <span>{project.badge}</span>
-            </div>
-
-            <div class="project-card__body">
-              <p class="project-card__meta">
-                {project.category} <i aria-hidden="true" /> {project.period}
-              </p>
-              <h3>{project.name}</h3>
-              <p class="project-card__proof">{project.proof}</p>
-            </div>
-
-            <footer class="project-card__footer">
-              <div class="project-card__tags" aria-label={`${project.name} 技术栈`}>
-                {project.stack.slice(0, 5).map((technology) => <span>{technology}</span>)}
-              </div>
-              <ArrowUpRight class="project-card__arrow" size={19} stroke-width={1.7} aria-hidden="true" />
-            </footer>
-          </a>
-        ))
-      }
-    </div>
+    <ProjectAccordion
+      client:load
+      projects={portfolio.projects}
+      defaultIndex={0}
+      expandRatio={0.62}
+      projectBase={`${baseUrl}projects/`}
+    />
   </div>
 </section>
-
-<style>
-  .projects-section .shell {
-    display: flex;
-    min-height: 100%;
-    flex-direction: column;
-    justify-content: center;
-    padding-block: calc(var(--header-height) + 44px) 58px;
-  }
-
-  .project-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px;
-  }
-
-  .project-card {
-    position: relative;
-    display: grid;
-    min-height: 278px;
-    padding: 27px 29px 25px;
-    overflow: hidden;
-    border: 1px solid var(--line-strong);
-    border-radius: 6px;
-    background: color-mix(in srgb, var(--surface-raised) 88%, transparent);
-    color: var(--ink);
-    grid-template-rows: auto 1fr auto;
-    transition:
-      border-color 220ms ease,
-      background-color 220ms ease,
-      transform 220ms ease,
-      box-shadow 220ms ease;
-  }
-
-  .project-card--featured {
-    grid-column: 1 / -1;
-  }
-
-  .project-card::before {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(112deg, color-mix(in srgb, var(--violet) 14%, transparent), transparent 42%);
-    opacity: 0;
-    pointer-events: none;
-    content: "";
-    transition: opacity 220ms ease;
-  }
-
-  .project-card:hover {
-    border-color: color-mix(in srgb, var(--violet) 64%, var(--line-strong));
-    background: color-mix(in srgb, var(--surface-raised) 94%, var(--violet) 6%);
-    box-shadow: 0 22px 60px color-mix(in srgb, var(--surface-deep) 68%, transparent);
-    transform: translateY(-4px);
-  }
-
-  .project-card:hover::before {
-    opacity: 1;
-  }
-
-  .project-card__topline,
-  .project-card__footer {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 18px;
-  }
-
-  .project-card__topline :global(svg),
-  .project-card__arrow {
-    color: var(--violet);
-  }
-
-  .project-card__topline > span {
-    padding: 5px 10px;
-    border: 1px solid color-mix(in srgb, var(--violet) 34%, transparent);
-    border-radius: 999px;
-    background: color-mix(in srgb, var(--violet) 15%, transparent);
-    color: color-mix(in srgb, var(--violet) 74%, var(--ink));
-    font-family: "JetBrains Mono Variable", monospace;
-    font-size: 10px;
-  }
-
-  .project-card__body {
-    position: relative;
-    z-index: 1;
-    align-self: center;
-    padding-block: 28px 25px;
-  }
-
-  .project-card__meta {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: 0;
-    color: var(--ink-faint);
-    font-family: "JetBrains Mono Variable", monospace;
-    font-size: 10px;
-  }
-
-  .project-card__meta i {
-    width: 3px;
-    height: 3px;
-    flex: 0 0 auto;
-    border-radius: 50%;
-    background: currentColor;
-  }
-
-  .project-card h3 {
-    margin: 13px 0 0;
-    color: var(--ink);
-    font-size: 28px;
-    font-weight: 610;
-    line-height: 1.15;
-  }
-
-  .project-card__proof {
-    max-width: 780px;
-    margin: 13px 0 0;
-    color: var(--ink-soft);
-    font-size: 14px;
-    line-height: 1.72;
-  }
-
-  .project-card__tags {
-    display: flex;
-    min-width: 0;
-    flex-wrap: wrap;
-    gap: 7px;
-  }
-
-  .project-card__tags span {
-    padding: 4px 8px;
-    border-radius: 999px;
-    background: color-mix(in srgb, var(--violet) 12%, var(--surface-deep));
-    color: color-mix(in srgb, var(--violet) 72%, var(--ink-soft));
-    font-family: "JetBrains Mono Variable", monospace;
-    font-size: 9px;
-    white-space: nowrap;
-  }
-
-  .project-card__arrow {
-    flex: 0 0 auto;
-    transition: transform 180ms ease;
-  }
-
-  .project-card:hover .project-card__arrow {
-    transform: translate(3px, -3px);
-  }
-
-  :root[data-style="light"] .project-card:hover {
-    box-shadow: 0 20px 48px rgba(66, 40, 115, 0.12);
-  }
-</style>

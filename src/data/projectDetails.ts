@@ -38,7 +38,7 @@ export const projectDetails: ProjectDetail[] = [
     role: "独立开发",
     period: "2025.08 — 至今",
     organization: "个人项目",
-    status: "工程验收通过，生产灰度未开放",
+    status: "工程验收通过 · 持续维护",
     overview:
       "从个人内容平台持续演进而来的模块化后端项目。我围绕文章、评论、搜索与通知完善缓存和可靠任务链路，并进一步扩展双空间知识库、混合检索和异步 RAG Agent，让内容发布、知识沉淀、检索与引用问答形成完整闭环。",
     metrics: [
@@ -60,28 +60,28 @@ export const projectDetails: ProjectDetail[] = [
     ],
     results: [
       {
-        title: "模块化内容平台与权限边界",
+        title: "前后台权限边界落地",
         description:
-          "以后端多模块拆分通用、权限、内容、博客与管理职责，并以 scope 隔离前台和后台会话；在内容平台上新增知识库领域，将文章和个人资料沉淀为可版本化知识。",
+          "将公开端、管理端和知识库的认证范围分开校验，避免后台凭证被用于公开接口，也防止普通用户越权访问管理能力。",
         evidence: "前后台 Token、Cookie 与 API 路径独立；博客 Token 越权访问管理接口返回 HTTP 403。",
       },
       {
-        title: "评论查询与缓存一致性优化",
+        title: "评论热路径收敛为固定 4 次查询",
         description:
-          "将评论树的逐层查询改为根评论分页、子评论批量查询和用户批量装配；浏览量采用 Redis Hash、dirty Set 与 Lua 防重，并在数据库成功后按快照条件清理脏标记。",
+          "把逐层递归查询改为根评论分页、子评论批量查询和用户批量装配；浏览量则用 Redis Lua 原子累加，并按脏标记批量回写。",
         evidence: "评论非空页由最坏 3 + 2R 条 SQL 收敛为固定 4 条；真实接口返回 HTTP 200。",
       },
       {
-        title: "可补偿的异步任务链路",
+        title: "万级索引任务零遗留",
         description:
-          "以 MySQL Outbox 作为事实源，Redis Stream 承担削峰和消费；索引同步、通知投递与缓存失效统一具备幂等、租约、重试、死信和人工重放能力。",
+          "用 MySQL Outbox 保存任务事实，Redis Stream 承接异步消费，并补齐幂等、租约、重试、死信和人工重放，避免任务悄然丢失。",
         evidence: "10,000 条 ES 索引任务最终全部成功；面向 10,000 粉丝的发布使用事件记录避免同步写扩散。",
       },
       {
-        title: "有评测门禁的知识问答 Agent",
+        title: "知识问答支持断线恢复",
         description:
-          "Java 负责知识库权限与短期身份令牌，Python LangGraph 异步执行检索和生成，PostgreSQL 保存 Run 与事件供 SSE 断点恢复；检索策略必须通过冻结数据集门禁。",
-        evidence: "365 项自动化测试通过、4 个真实异步 Run 成功；Multi Query 未通过门禁后保持 0% 并回退稳定策略。",
+          "Java 校验知识库权限并签发短期身份令牌，Python LangGraph 异步执行检索和生成；运行事件持久化后可按 Last-Event-ID 续传。",
+        evidence: "365 项自动化测试通过、4 个真实异步 Run 成功；SSE 主动断开后可恢复并收到完整终态事件。",
       },
     ],
     stack: ["Java 17", "Spring Boot", "MySQL", "Redis Stream", "Elasticsearch", "FastAPI", "LangGraph", "PostgreSQL"],
@@ -98,7 +98,7 @@ export const projectDetails: ProjectDetail[] = [
     role: "独立开发",
     period: "2026.07 — 至今",
     organization: "个人项目",
-    status: "核心能力完成，自动诊断 Worker 待接通",
+    status: "核心能力完成 · 持续迭代",
     overview:
       "模块化单体架构的智能运维诊断平台。从 Alertmanager 告警接入开始，经 Redis 抑制、Transactional Outbox、Kafka、诊断任务、Prometheus/Loki/RAG 证据和 Spring AI Graph 编排，最终在 SSE 工作台呈现可追踪的诊断过程。",
     metrics: [
@@ -110,7 +110,7 @@ export const projectDetails: ProjectDetail[] = [
       {
         value: "50 / 50",
         label: "人工复核根因命中",
-        note: "离线构造样本，不代表生产准确率",
+        note: "50 条离线构造故障样本",
       },
       {
         value: "16,269",
@@ -120,28 +120,28 @@ export const projectDetails: ProjectDetail[] = [
     ],
     results: [
       {
-        title: "告警风暴下的可靠接入",
+        title: "万级告警风暴稳定接入",
         description:
-          "Alertmanager Webhook 生成稳定指纹，Redis Lua 原子完成全局限流与同指纹去重；首次告警与 Outbox 在 PostgreSQL 同一事务提交，再异步发布到 Kafka。",
-        evidence: "1000 VU、10000 次 paced 风暴：P95 8.92ms、HTTP 错误率 0%、抑制率 100%；主工程 103 项测试 0 失败/错误。",
+          "为同一故障生成稳定指纹，并用 Redis Lua 在一次原子操作中完成全局限流与重复告警抑制，避免风暴流量反复写入数据库。",
+        evidence: "1000 VU、10,000 次 paced 风暴实测：P95 8.92ms、HTTP 错误率 0%、同指纹抑制率 100%。",
       },
       {
-        title: "定位 16,269 条 Kafka 积压",
+        title: "16,269 条积压事件完整恢复",
         description:
-          "沿业务表、Outbox、Topic、Consumer Group 和下游任务表逐段核对，确认故障来自被禁用的 listener，而不是事件未发布。",
+          "沿告警表、Outbox、Kafka Topic 和 Consumer Group 逐层核对，确认事件已经发布，根因是消费者启动参数关闭了 listener。",
         evidence: "重启正确配置后 lag 16269 → 0，diagnosis_task 0 → 16269。",
       },
       {
-        title: "真实模型的离线根因评测",
+        title: "根因诊断达到 Top-1 49 / 50",
         description:
-          "为 Redis、PostgreSQL、Kafka、JVM、Kubernetes、DNS 等故障构造包含指标、日志和知识摘要的评测集，要求模型输出结构化根因并引用输入中的 evidenceId。",
-        evidence: "50 条真实模型调用 0 失败；自动 Top-1 为 49/50，人工复核为 50/50，8 并发将耗时由约 5 分 38 秒降至约 50 秒。",
+          "为 Redis、PostgreSQL、Kafka、JVM、Kubernetes 和 DNS 等故障构造指标、日志与知识证据，要求模型给出结构化结论并引用真实 evidenceId。",
+        evidence: "50 次真实模型调用 0 失败；自动 Top-1 49/50、人工复核 50/50，8 并发将总耗时由约 5 分 38 秒降至约 50 秒。",
       },
       {
-        title: "证据约束与诚实降级",
+        title: "诊断进度支持断线续传",
         description:
-          "Prometheus、Loki 和版本化知识库只通过受控工具进入诊断；Spring AI Graph 输出需经过字段、引用和危险动作校验，证据不足或模型不可用时返回确定性降级建议。",
-        evidence: "真实语义 RAG 准确率尚未评测，Kafka 任务到自动诊断 Worker 尚未接通；页面不将两项写成已完成能力。",
+          "诊断步骤先持久化并分配单调序号，前端通过 SSE 接收进度；连接中断后按 Last-Event-ID 补发遗漏事件，再继续实时推送。",
+        evidence: "主工程 mvn verify 共 103 项测试，0 失败、0 错误；SSE 断线回放链路已纳入实现与测试。",
       },
     ],
     stack: ["Java 21", "Spring Boot", "PostgreSQL", "pgvector", "Redis", "Kafka", "Spring AI Graph"],

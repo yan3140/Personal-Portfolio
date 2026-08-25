@@ -59,13 +59,13 @@ export const portfolio = {
       period: "2025.08 — 至今",
       proof: "365 项自动化测试通过；10,000 条索引任务最终全部成功，十万请求 warm 复测达到 8,009 req/s。",
       summary:
-        "从内容平台扩展到可靠异步任务、混合检索与可追溯问答的一体化后端项目。",
+        "从内容发布、评论与搜索，逐步扩展到可靠异步任务和知识问答的模块化后端平台。",
       contribution:
-        "在原有内容平台基础上扩展知识库领域模块、内部检索合约、Python Agent 服务和问答页面，完成 Java、Python 与 Vue 之间的端到端链路。",
+        "独立完成评论与缓存优化、可补偿任务链路、知识库检索和 Agent 联调，并为关键链路建立自动化验证。",
       highlights: [
-        "以系统库和个人库隔离公开内容与私有资料，通过不可变文档版本和稳定 Chunk ID 保证引用可追溯。",
-        "使用 MySQL Outbox、Redis Stream 和 Elasticsearch 构建可重试索引链路，并通过 BM25、向量检索与 RRF 完成候选融合。",
-        "由 Java 校验知识库权限并签发短期身份令牌，LangGraph 异步 Run 支持事件持久化、SSE 恢复和引用校验。",
+        "评论非空页由最坏 3 + 2R 次 SQL 收敛到固定 4 次；浏览量采用 Redis Lua 原子累加与批量回写，降低高频写库压力。",
+        "用 MySQL Outbox 与 Redis Stream 构建可补偿任务链；10,000 条 Elasticsearch 索引任务最终全部成功，无遗留待处理任务。",
+        "打通知识入库、混合检索与异步问答链路；Java、Python Agent 与 Vue 共 365 项自动化测试通过。",
       ],
       stack: ["Java 17", "Spring Boot", "MySQL", "Redis Stream", "Elasticsearch", "FastAPI", "LangGraph"],
       status: "工程验收通过 · 持续维护",
@@ -81,16 +81,16 @@ export const portfolio = {
       period: "2026.07 — 至今",
       proof: "1000 VU 告警风暴实测 10,000 次请求，P95 8.92ms、HTTP 错误率 0%、同指纹抑制率 100%。",
       summary:
-        "融合可靠告警事件、混合 RAG 与 Spring AI Graph 的 Java 智能运维诊断平台。",
+        "围绕告警风暴、可靠事件和证据约束诊断构建的 Java AIOps 平台。",
       contribution:
-        "围绕告警接入、证据采集和 AI 诊断完成数据库设计、可靠事件链路、版本化知识库、Agent 编排、SSE 工作台、可观测性与测试。",
+        "独立完成告警接入、可靠事件链、指标与日志证据、Agent 编排、诊断工作台和工程验收。",
       highlights: [
-        "从 Alertmanager Webhook 开始，串联告警指纹、Redis 限流去重、PostgreSQL、Transactional Outbox、Kafka 与幂等消费。",
-        "将知识库拆分为逻辑文档、不可变版本、发布指针和持久化索引任务，支持租约、退避、死信与人工重放。",
-        "把告警、指标、日志和组合症状组织为多路查询，通过双层 RRF 形成可追溯证据，再交给 Spring AI Graph 生成受约束诊断。",
+        "用稳定告警指纹和 Redis Lua 原子限流去重抵御告警风暴；1000 VU 下 10,000 次请求 P95 8.92ms，错误率 0%。",
+        "打通 PostgreSQL Outbox 到 Kafka 的可靠事件链并定位消费者配置故障；16,269 条积压全部恢复，最终 lag 降至 0。",
+        "建立证据约束的根因诊断评测；50 次真实模型调用 0 失败，自动 Top-1 49/50、人工复核 50/50。",
       ],
       stack: ["Java 21", "Spring Boot", "PostgreSQL", "Redis", "Kafka", "pgvector", "Spring AI Graph"],
-      status: "核心能力完成 · Worker 待接通",
+      status: "核心能力完成 · 持续迭代",
       tone: "green",
       repository: "https://github.com/yan3140/opspilot-aiops",
     },
@@ -107,9 +107,9 @@ export const portfolio = {
       contribution:
         "负责育种与系统管理模块的 React/TypeScript 页面、接口封装和主要后端业务，完善数据库迁移、测试数据及前后端联调。",
       highlights: [
-        "表型 CSV 上传后完成文件校验、多表关联、动态表创建、树节点更新和统计回填，并保持查询与删除链路一致。",
-        "为表型、基因和图片维护独立数据树，通过后代节点递归筛选、级联条件与分页规则统一查询范围。",
-        "将复杂菜单与按钮授权收敛为模块级角色选择，同时完善用户、通知、事纪、健康检测和告警等系统管理功能。",
+        "打通表型 CSV、基因型 VCF 与图片 3 类数据从校验、上传、解析到失败重试的完整导入链路。",
+        "用祖先节点递归筛选解决品种、材料与图片的层级查询问题，并统一列表分页与统计口径。",
+        "覆盖 18 个测试类、47 项 JUnit 测试且 0 失败，为教师科研项目的真实部署与后续维护提供回归保障。",
       ],
       stack: ["Java 17", "Spring Boot", "MyBatis", "MySQL", "Redis", "React", "TypeScript"],
       status: "基本完成 · 联调维护",

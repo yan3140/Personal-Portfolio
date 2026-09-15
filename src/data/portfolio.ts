@@ -36,7 +36,7 @@ export const portfolio = {
     status: "在校学习 · 开放实习机会",
     email: "3140585910@qq.com",
     github: "https://github.com/yan3140",
-    resume: "",
+    resume: "resume/lingxiao-pang-backend-agent-resume.pdf",
   },
   education: {
     school: "华中农业大学",

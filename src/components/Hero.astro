@@ -6,6 +6,10 @@ import SplitFlapText from "./SplitFlapText.jsx";
 
 const { profile, focus } = portfolio;
 const signalDots = Array.from({ length: 24 });
+const baseUrl = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const resumeUrl = profile.resume ? `${baseUrl}${profile.resume}` : "";
 ---
 
 <section class="hero" id="top" aria-labelledby="hero-title">
@@ -58,7 +62,11 @@ const signalDots = Array.from({ length: 24 });
               <ArrowDown size={17} stroke-width={1.8} />
             </a>
             {profile.resume && (
-              <a class="button button--secondary" href={profile.resume}>
+              <a
+                class="button button--secondary"
+                href={resumeUrl}
+                download="Lingxiao-Pang-Resume.pdf"
+              >
                 <FileText size={17} stroke-width={1.8} />
                 简历
               </a>

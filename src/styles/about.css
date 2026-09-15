@@ -305,7 +305,7 @@
 }
 
 .contact-card--resume {
-  cursor: default;
+  cursor: pointer;
 }
 
 .contact-card__check {

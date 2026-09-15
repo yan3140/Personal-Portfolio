@@ -14,6 +14,10 @@ import "../styles/about.css";
 import TechnologyField from "./TechnologyField.jsx";
 
 const { profile, focus, technologyGroups, education } = portfolio;
+const baseUrl = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const resumeUrl = profile.resume ? `${baseUrl}${profile.resume}` : "";
 ---
 
 <section
@@ -102,17 +106,22 @@ const { profile, focus, technologyGroups, education } = portfolio;
         </header>
         <div class="about-block-content">
           <div class="contact-grid">
-            <div class="contact-card contact-card--resume" aria-disabled="true" title="简历暂未上传">
+            <a
+              class="contact-card contact-card--resume"
+              href={resumeUrl}
+              download="Lingxiao-Pang-Resume.pdf"
+              title="下载个人简历"
+            >
               <span class="contact-card__icon" aria-hidden="true">
                 <FileText class="contact-card__icon-rest" size={24} stroke-width={1.8} />
                 <Download class="contact-card__icon-hover" size={24} stroke-width={1.8} />
               </span>
               <span class="contact-card__copy">
                 <strong>个人简历</strong>
-                <small>暂未上传</small>
+                <small>PDF 格式 · 点击下载</small>
               </span>
               <span class="contact-card__hint">下载</span>
-            </div>
+            </a>
 
             <a class="contact-card" href={profile.github} target="_blank" rel="noreferrer">
               <span class="contact-card__icon" aria-hidden="true">
